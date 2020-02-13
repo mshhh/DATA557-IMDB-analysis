@@ -1,12 +1,12 @@
 # DATA557-IMDB-analysis
 
 ## Important Links
-[Data](https://datasets.imdbws.com) <br\>
+[Data](https://datasets.imdbws.com) 
 
 [Proposal](https://docs.google.com/document/d/1WN3mksE9U5KUgyubxzR_UP_kka7vfzPaNG43zL52-fw/edit#)
 
 ## Timeline
-Wed January 22: general discussion of project in class <br\>
+Wed January 22: general discussion of project in class 
 
 Jan 22-29: during this time identify a group to work with<br\>
 
