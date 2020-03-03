@@ -1,0 +1,142 @@
+---
+title: "Question3"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question3
+**Question**  
+
+What affects average IMDb rating and how does that change with time? Is there any interaction between the predictors? 
+
+**Analysis Plan**
+
+Apply multiple linear regression models with Decade, Genre and Oscar Nominated Directors as predictors and Average IMDb Rating as response with the assumption that the sample we choose has approximately a Normal distribution and constant variance. We will be able to check the assumptions using residual diagnostic plots. When introducing factors to the model, we will also perform correlation analysis between variables to avoid biased estimates due to confounding effect.   
+Model: E(Rating) = β0 + β1(Decade) + β2(Genre) + β3(Oscar) + β4(Decade*Genre) + β5(Genre*Oscar) + β6(Decade*Oscar) + β7(Decade*Genre*Oscar)
+We will perform multiple t-tests with the null hypothesis that the regression coefficient is equal to 0 at 95% significance level for all estimated coefficients. We will test the overall effect and composite effect of combinations of predictors as well as potential interactions between predictors by setting up null, reduced and full models. We will conduct F-tests for composite hypotheses using the ‘anova’ function in R. We will interpret the F value and p-value in the output to decide which predictor or combination of predictors has a significant effect on movie rating.
+
+**Code**  
+
+- read in data
+```{r}
+df = read.csv('us_movies_with_director_info.csv')
+```
+
+```{r}
+head(df)
+```
+
+```{r}
+summary(nominations)
+```
+
+
+- EDA
+```{r}
+attach(df)
+library(ggplot2)
+library(plotly)
+library(hrbrthemes)
+```
+
+
+```{r}
+library(ggplot2)
+# counts
+ggplot(df, aes(x=decade)) +
+  geom_bar()
+```
+
+```{r}
+ggplot(df, aes(x=decade, y=averageRating, group=decade, fill=decade)) + 
+    geom_violin(width=12) +
+    geom_boxplot(width=1, color="white", alpha=0.2)
+```
+
+
+
+
+```{r}
+ggplot(df, aes(x=genre_0, fill=genre_0)) +
+  geom_bar() +
+  theme(axis.text.x = element_text(angle = 30, hjust = 1))
+```
+
+```{r}
+ggplot(df, aes(x=genre_0, y=averageRating, group=genre_0, fill=genre_0)) + 
+    geom_violin(width=1) +
+    geom_boxplot(width=0.1, color="white", alpha=0.2) +
+    theme(axis.text.x = element_text(angle = 30, hjust = 1))
+```
+
+
+```{r}
+ggplot(df, aes(x=nominations, fill=nominations)) +
+  geom_bar() +
+  theme(axis.text.x = element_text(angle = 30, hjust = 1))
+```
+
+```{r}
+ggplot(df, aes(x=nominations, y=averageRating, group=nominations, fill=nominations)) + 
+    geom_violin(width=1) +
+    geom_boxplot(width=0.1, color="white", alpha=0.2) +
+    theme(axis.text.x = element_text(angle = 30, hjust = 1))
+```
+
+```{r}
+library(reshape2)
+```
+
+
+```{r}
+dec.gen.n = aggregate(averageRating, by = list(decade=decade, genre = genre_0),length)
+dec.gen.n.piv=acast(dec.gen.n, decade~genre)
+heatmap(dec.gen.n.piv, Colv = NA, Rowv = NA)
+```
+
+
+- fit linear model
+```{r}
+fit = lm(averageRating~decade*genre_0*nominations)
+```
+
+```{r}
+summary(fit)
+```
+
+```{r}
+plot(fit)
+```
+
+- fit with no interaction
+```{r}
+fit.reduced.noInt = lm(averageRating~decade+genre_0+nominations)
+```
+
+```{r}
+summary(fit.reduced.noInt)
+```
+
+```{r}
+plot(fit.reduced.noInt)
+```
+```{r}
+anova(fit.reduced.noInt, fit)
+```
+
+
+
+-fit without genre
+
+```{r}
+fit.reduced.noG = lm(averageRating~decade*nominations)
+```
+
+```{r}
+summary(fit.reduced.noG)
+plot(fit.reduced.noG)
+```
+
